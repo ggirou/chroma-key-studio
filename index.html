@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chroma Key Studio</title>
+    <meta name="description" content="Production-ready green screen in the browser using WebGL">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container" id="app-container">
+        
+        <main class="canvas-container">
+            <div id="background-layer" class="background-layer checkerboard"></div>
+            <canvas id="glcanvas"></canvas>
+            <video id="videoElement" autoplay playsinline muted style="display: none;"></video>
+            <div id="loading" class="loading-overlay">
+                <div class="spinner"></div>
+                <p>Initializing camera...</p>
+            </div>
+        </main>
+
+        <aside class="controls-panel glass-panel">
+            <div class="panel-header">
+                <h1>Chroma Key Studio</h1>
+            </div>
+
+            <div class="control-group">
+                <label for="colorPicker">Key Color</label>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="colorPicker" value="#00ff00">
+                    <button id="pipetteBtn" class="icon-btn" title="Use eyedropper">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="label-with-value">
+                    <label for="similarityRange">Similarity</label>
+                    <span id="similarityValue">0.40</span>
+                </div>
+                <input type="range" id="similarityRange" min="0" max="1" step="0.01" value="0.4">
+            </div>
+
+            <div class="control-group">
+                <div class="label-with-value">
+                    <label for="smoothnessRange">Smoothness</label>
+                    <span id="smoothnessValue">0.10</span>
+                </div>
+                <input type="range" id="smoothnessRange" min="0" max="1" step="0.01" value="0.1">
+            </div>
+
+            <div class="control-group">
+                <div class="label-with-value">
+                    <label for="spillRange">Spill Reduction</label>
+                    <span id="spillValue">0.10</span>
+                </div>
+                <input type="range" id="spillRange" min="0" max="1" step="0.01" value="0.1">
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="control-group">
+                <label>Background</label>
+                <div class="button-group">
+                    <input type="file" id="bgUpload" accept="image/*" style="display: none;">
+                    <button id="uploadBtn" class="action-btn">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        Upload Image
+                    </button>
+                    <button id="captureBgBtn" class="action-btn">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                        Capture Camera
+                    </button>
+                </div>
+                <button id="clearBgBtn" class="action-btn secondary mt-2" style="display: none;">Remove background</button>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="control-group">
+                <button id="fullscreenBtn" class="action-btn">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+                    Fullscreen
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
