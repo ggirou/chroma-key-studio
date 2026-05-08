@@ -57,12 +57,40 @@ const fragmentShaderSource = `
 
     vec4 ProcessChromaKey(vec2 texCoord) {
         vec4 rgba = texture2D(tex, texCoord);
-        float chromaDist = distance(RGBtoUV(rgba.rgb), RGBtoUV(keyColor));
+        
+        // Filtre anti-macroblocs (compression webcam et bruit de 20px)
+        // Échantillonnage épars (sparse sampling) sur un grand rayon
+        vec2 dx = vec2(1.0 / texWidth, 0.0);
+        vec2 dy = vec2(0.0, 1.0 / texHeight);
+        
+        vec3 blurColor = rgba.rgb * 0.20;
+        
+        // Rayon 5 pixels
+        blurColor += texture2D(tex, texCoord + dx * 5.0).rgb * 0.10;
+        blurColor += texture2D(tex, texCoord - dx * 5.0).rgb * 0.10;
+        blurColor += texture2D(tex, texCoord + dy * 5.0).rgb * 0.10;
+        blurColor += texture2D(tex, texCoord - dy * 5.0).rgb * 0.10;
+        
+        // Rayon 10 pixels (diagonales)
+        blurColor += texture2D(tex, texCoord + dx * 10.0 + dy * 10.0).rgb * 0.05;
+        blurColor += texture2D(tex, texCoord - dx * 10.0 + dy * 10.0).rgb * 0.05;
+        blurColor += texture2D(tex, texCoord + dx * 10.0 - dy * 10.0).rgb * 0.05;
+        blurColor += texture2D(tex, texCoord - dx * 10.0 - dy * 10.0).rgb * 0.05;
+        
+        // Rayon 15 pixels
+        blurColor += texture2D(tex, texCoord + dx * 15.0).rgb * 0.05;
+        blurColor += texture2D(tex, texCoord - dx * 15.0).rgb * 0.05;
+        blurColor += texture2D(tex, texCoord + dy * 15.0).rgb * 0.05;
+        blurColor += texture2D(tex, texCoord - dy * 15.0).rgb * 0.05;
+
+        float chromaDist = distance(RGBtoUV(blurColor), RGBtoUV(keyColor));
         float baseMask = chromaDist - similarity;
-        float fullMask = pow(clamp(baseMask / smoothness, 0., 1.), 1.5);
+        
+        // Utilisation de smoothstep pour une transition plus douce et moins bruitée
+        float fullMask = smoothstep(0.0, 1.0, clamp(baseMask / smoothness, 0.0, 1.0));
         rgba.a = fullMask;
 
-        float spillVal = pow(clamp(baseMask / spill, 0., 1.), 1.5);
+        float spillVal = smoothstep(0.0, 1.0, clamp(baseMask / spill, 0.0, 1.0));
         float desat = clamp(rgba.r * 0.2126 + rgba.g * 0.7152 + rgba.b * 0.0722, 0., 1.);
         rgba.rgb = mix(vec3(desat, desat, desat), rgba.rgb, spillVal);
         return rgba;
