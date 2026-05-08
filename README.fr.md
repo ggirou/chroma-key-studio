@@ -37,4 +37,10 @@ Pour des raisons de sécurité, la plupart des navigateurs requièrent que la pa
 - **Réduction de reflet (Spill)** : Permet de désaturer les pixels qui ont légèrement pris la couleur du fond vert à cause des reflets de lumière.
 
 ---
+
+## Licence
+
+Ce projet est sous [licence MIT](LICENSE).
+
+---
 *Créé avec l'assistance de Gemini / Antigravity.*

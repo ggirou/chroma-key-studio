@@ -37,4 +37,10 @@ For security reasons, most web browsers require the page to be served via `local
 - **Spill Reduction**: Desaturates pixels that have reflected light from the green screen, helping to remove the green halo effect.
 
 ---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
 *Created with the assistance of Gemini / Antigravity.*
